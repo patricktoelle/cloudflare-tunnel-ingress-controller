@@ -14,6 +14,15 @@ cloudflare:
   #   tunnelNameKey: tunnel_name
   #   apiTokenKey: api_token
 
+  # Uncomment if you would like to mount CA certificates for the origin service
+  # caPool:
+  #   existingConfigMap: ""
+  #   existingSecret: ""
+  #   # Defaults to `ca-certificates.crt`
+  #   key: ""
+  #   # Defaults to `/etc/ssl/certs`
+  #   mountPath: ""
+
 ingressClass:
   name: cloudflare-tunnel
   controllerValue: strrl.dev/cloudflare-tunnel-ingress-controller

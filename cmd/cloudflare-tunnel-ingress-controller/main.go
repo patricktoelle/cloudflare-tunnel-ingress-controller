@@ -27,6 +27,10 @@ type rootCmdFlags struct {
 	cloudflareAccountId  string
 	cloudflareTunnelName string
 	namespace            string
+	caPoolSecret         *string
+	caPoolConfigMap      *string
+	caPoolKey            *string
+	caPoolMountPath      *string
 }
 
 func main() {
@@ -99,7 +103,8 @@ func main() {
 					case <-done:
 						return
 					case _ = <-ticker.C:
-						err := controller.CreateControlledCloudflaredIfNotExist(ctx, mgr.GetClient(), tunnelClient, options.namespace)
+						caPool := controller.GetCaPoolOptions(options.caPoolConfigMap, options.caPoolSecret, options.caPoolKey, options.caPoolMountPath)
+						err := controller.CreateControlledCloudflaredIfNotExist(ctx, mgr.GetClient(), tunnelClient, options.namespace, caPool)
 						if err != nil {
 							logger.WithName("controlled-cloudflared").Error(err, "create controlled cloudflared")
 						}
@@ -119,6 +124,10 @@ func main() {
 	rootCommand.PersistentFlags().StringVar(&options.cloudflareAccountId, "cloudflare-account-id", options.cloudflareAccountId, "cloudflare account id")
 	rootCommand.PersistentFlags().StringVar(&options.cloudflareTunnelName, "cloudflare-tunnel-name", options.cloudflareTunnelName, "cloudflare tunnel name")
 	rootCommand.PersistentFlags().StringVar(&options.namespace, "namespace", options.namespace, "namespace to execute cloudflared connector")
+	rootCommand.PersistentFlags().StringVar(options.caPoolConfigMap, "capool-config-map", "", "config map containing CA certificates to mount")
+	rootCommand.PersistentFlags().StringVar(options.caPoolSecret, "capool-secret", "", "secret containing CA certificates to mount")
+	rootCommand.PersistentFlags().StringVar(options.caPoolKey, "capool-config-map", "", "key in the configmap/secret containing the CA certificates")
+	rootCommand.PersistentFlags().StringVar(options.caPoolMountPath, "capool-secret", "", "the path within the cloudflared container to mount the CA certificates")
 
 	err := rootCommand.Execute()
 	if err != nil {

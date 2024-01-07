@@ -39,6 +39,18 @@ spec:
             - --cloudflare-account-id=$(CLOUDFLARE_ACCOUNT_ID)
             - --cloudflare-tunnel-name=$(CLOUDFLARE_TUNNEL_NAME)
             - --namespace=$(NAMESPACE)
+            {{- if .Values.cloudflare.caPool.existingConfigMap }}
+            - --capool-config-map={{ .Values.cloudflare.caPool.existingConfigMap }}
+            {{- end }}
+            {{- if .Values.cloudflare.caPool.existingSecret }}
+            - --capool-secret={{ .Values.cloudflare.caPool.existingSecret }}
+            {{- end }}
+            {{- if .Values.cloudflare.caPool.key }}
+            - --capool-key={{ .Values.cloudflare.caPool.key }}
+            {{- end }}
+            {{- if .Values.cloudflare.caPool.mountPath }}
+            - --capool-mount-path={{ .Values.cloudflare.caPool.mountPath }}
+            {{- end }}
           env:
             - name: CLOUDFLARE_API_TOKEN
               valueFrom:
