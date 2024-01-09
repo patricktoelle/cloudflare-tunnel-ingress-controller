@@ -12,7 +12,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -66,6 +65,7 @@ func CreateControlledCloudflaredIfNotExist(
 	deployment := cloudflaredConnectDeploymentTemplating(
 		token,
 		namespace,
+		int32(replicas),
 		controllerPod.Spec.Volumes,
 		controllerVolumeMounts,
 	)
@@ -80,7 +80,7 @@ func CreateControlledCloudflaredIfNotExist(
 func cloudflaredConnectDeploymentTemplating(
 	token string,
 	namespace string,
-  replicas int32,
+	replicas int32,
 	extraVolumes []v1.Volume,
 	extraVolumeMounts []v1.VolumeMount,
 ) *appsv1.Deployment {
@@ -127,11 +127,11 @@ func cloudflaredConnectDeploymentTemplating(
 								"--token",
 								token,
 							},
-							VolumeMounts: volumeMounts,
+							VolumeMounts: extraVolumeMounts,
 						},
 					},
 					RestartPolicy: v1.RestartPolicyAlways,
-					Volumes:       volumes,
+					Volumes:       extraVolumes,
 				},
 			},
 		},
